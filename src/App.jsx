@@ -5,6 +5,7 @@ import "./App.css";
 import SVMClassifier from "./components/SVMClassifier";
 import ReviewList from "./components/ReviewTable";
 import ButtonClassify from "./components/ButtonClassify";
+import ReviewClassifier from "./components/ReviewClassifier";
 
 function App() {
 
@@ -14,7 +15,8 @@ function App() {
 		// 	<ReviewList />
 		// </>
 
-		<SVMClassifier />
+		// <SVMClassifier />
+		<ReviewClassifier />
 	);
 }
 
