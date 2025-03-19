@@ -33,17 +33,30 @@ const OnnxRuntimeWebClassifier = () => {
 
       try {
         const session = await ort.InferenceSession.create(
-          'classification_model.onnx',
+          'classification-model.onnx',
         );
+        console.log("Model Inputs:", session);
+
         const inputs = reviews.map((text) => textToTensor(text));
+        console.log("Inputs:", inputs);
 
-        const results = await Promise.all(
-          inputs.map((input) => session.run({ input_text: input })),
-        );
-
+        const results = [];
+        for (const input of inputs) {
+            try {
+                const output = await session.run({ input });
+                results.push(output);
+            } catch (error) {
+                console.error("ONNX Runtime Error:", error);
+            }
+        }
+        
+        console.log("Results:", results);
+        
+        const outputName = session.outputNames[0]; // Ambil output pertama
+        
         const formattedPredictions = results.map((res, idx) => ({
           review: reviews[idx],
-          prediction: res.output_label.data[0], // Sesuaikan dengan output model
+          prediction: res[outputName].data[0], // Sesuaikan dengan output model
         }));
 
         setPredictions(formattedPredictions);
@@ -56,12 +69,9 @@ const OnnxRuntimeWebClassifier = () => {
   };
 
   const textToTensor = (text) => {
-    // Konversi teks ke tensor (tergantung pada preprocessing model ONNX)
-    const processedText = new Float32Array(text.length).map((_, i) =>
-      text.charCodeAt(i),
-    );
-    return new ort.Tensor('float32', processedText, [1, text.length]);
+    return new ort.Tensor("string", [text], [1]); // Mengirim string langsung sebagai tensor
   };
+
 
   return (
     <div className="p-4">
