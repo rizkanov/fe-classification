@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import * as ort from 'onnxruntime-web';
+
+const MODEL_PATH = '/classification-model.onnx';
 
 const OnnxRuntimeWebClassifier = () => {
   const [file, setFile] = useState(null);
@@ -28,7 +30,7 @@ const OnnxRuntimeWebClassifier = () => {
       const reviews = rows.slice(1).map(row => row[reviewIndex]).filter(Boolean);
 
       try {
-        const session = await ort.InferenceSession.create('classification-model.onnx');
+        const session = await ort.InferenceSession.create(MODEL_PATH);
         const inputs = reviews.map(text => textToTensor(text));
 
         const results = [];
